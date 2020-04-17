@@ -47,6 +47,7 @@ func init() {
 
 func main() {
 
+	loginController := controllers.LoginController{}
 	itemController := controllers.ItemController{}
 	userController := controllers.UserController{}
 
@@ -90,39 +91,23 @@ func main() {
 		c.String(200, "pong "+fmt.Sprint(time.Now().Unix()))
 	})
 
-	router.POST("/login", userController.Login)
-	router.GET("/checktoken", userController.CheckForToken)
-	router.GET("/testauth", auth.JWTVerifyMiddleWare, userController.TestAuth)
+	router.POST("/login", loginController.Login)
+	router.GET("/checktoken", loginController.CheckForToken)
+	router.GET("/testauth", auth.JWTVerifyMiddleWare, loginController.TestAuth)
 
 	api := router.Group("/api", auth.JWTVerifyMiddleWare)
 
-	api.GET("/users", userController.G)
-	api.GET("/services/:id", serviceController.GetService)
-	api.POST("/services", serviceController.AddService)
-	api.PUT("/services", serviceController.UpdateService)
-	api.DELETE("/services/:id", serviceController.RemoveService)
+	api.GET("/users", userController.GetUsers)
+	api.GET("/users/:id", userController.GetUser)
+	api.POST("/users", userController.AddUser)
+	api.PUT("/users", userController.UpdateUser)
+	api.DELETE("/users/:id", userController.RemoveUser)
 
-	api.GET("/carriages", carriageController.GetCarriages)
-	api.GET("/carriages/:id", carriageController.GetCarriage)
-	api.GET("/carriages/:id/connectwise", carriageController.PostToConnectWise)
-	api.POST("/carriages", carriageController.AddCarriage)
-	api.PUT("/carriages", carriageController.UpdateCarriage)
-	api.DELETE("/carriages/:id", carriageController.RemoveCarriage)
-	api.POST("/carriages/aapt/qualifyAddress", carriageController.QualifyAaptAddress)
-	api.POST("/carriages/aapt/qualifyProduct", carriageController.QualifyAaptProduct)
-	api.POST("/carriages/aapt/qualifyFastFibreProduct", carriageController.QualifyFastFibreProduct)
-
-	api.GET("/products/ethernetaccess", productController.GetEthernetAccessTypes)
-	api.GET("/products/ethernetqos", productController.GetEthernetQosTypes)
-	api.GET("/products/eline", productController.GetElineTypes)
-	api.POST("/products/providerproducts", productController.GetProviderProducts)
-	api.POST("/products/access", productController.GetAccessClasses)
-	api.POST("/products/available", productController.GetAvailableProducts)
-
-	api.POST("/pricing/aapt/bandwidth", pricingController.GetBandwidthPrices)
-	api.POST("/pricing/aapt/productPricing", pricingController.GetAaptProductPricing)
-	api.POST("/pricing/aapt/intrastate", pricingController.GetAaptIntrastateCharges)
-	api.POST("/pricing/aapt/charges", pricingController.GetAaptServiceCharges)
+	api.GET("/items", itemController.GetItems)
+	api.GET("/items/:id", itemController.GetItem)
+	api.POST("/items", itemController.AddItem)
+	api.PUT("/items", itemController.UpdateItem)
+	api.DELETE("/items/:id", itemController.RemoveItem)
 
 	// server execution runs in it's own thread
 	// separate channel established to monitor for shutdown.
