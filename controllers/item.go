@@ -93,6 +93,7 @@ func (s ItemController) UpdateItem(c *gin.Context) {
 	}
 
 	count, err := service.ItemsService.UpdateItem(item)
+	log.Println("items updated", count)
 
 	if err != nil {
 		if err.Error() == "not found" {
@@ -108,9 +109,14 @@ func (s ItemController) UpdateItem(c *gin.Context) {
 }
 
 func (s ItemController) RemoveItem(c *gin.Context) {
-	id := c.Param("id")
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusNotAcceptable, gin.H{"message": "id is not a number", "error": err.Error()})
+		return
+	}
 
 	count, err := service.ItemsService.RemoveItem(id)
+	log.Println("items deleted", count)
 
 	if err != nil {
 		if err.Error() == "not found" {

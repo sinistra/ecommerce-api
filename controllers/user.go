@@ -2,9 +2,11 @@ package controllers
 
 import (
 	"fmt"
+	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -23,11 +25,11 @@ func (s UserController) GetUsers(c *gin.Context) {
 	request := make(map[string][]string)
 	if err := c.BindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "items failed binding.", "error": err.Error()})
+		return
 	}
 	log.Println(request)
 
 	users, err := service.UsersService.GetUsers(request)
-
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Server error"})
 		return
@@ -39,18 +41,18 @@ func (s UserController) GetUsers(c *gin.Context) {
 func (s UserController) GetUser(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusNotAcceptable, gin.H{"error": err})
+		c.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
 	}
 
 	user, err := service.UsersService.GetUser(id)
 	if err != nil {
-		if err.Error() == "not found" {
-			msg := fmt.Sprintf("%s not found.", id)
+		if err.Error() == "sql: no rows in result set" {
+			msg := fmt.Sprintf("record %d not found.", id)
 			c.JSON(http.StatusNotFound, gin.H{"message": msg})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Server error"})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Server error", "error": err.Error()})
 		return
 	}
 
@@ -62,6 +64,7 @@ func (s UserController) AddUser(c *gin.Context) {
 
 	if err := c.BindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "user failed binding.", "error": err.Error()})
+		return
 	}
 
 	if user.Email == "" {
@@ -69,8 +72,21 @@ func (s UserController) AddUser(c *gin.Context) {
 		return
 	}
 
+	if len(user.Password) > 0 {
+		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+		user.Password = string(hashedPassword)
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Password is missing"})
+		return
+	}
+
 	userID, err := service.UsersService.AddUser(user)
 	if err != nil {
+		if strings.Contains(err.Error(), "Duplicate") {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "A record with this email already exists"})
+			return
+		}
+		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
@@ -83,6 +99,7 @@ func (s UserController) UpdateUser(c *gin.Context) {
 
 	if err := c.BindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "user failed binding.", "error": err.Error()})
+		return
 	}
 
 	if user.Id < 1 || user.Email == "" {
@@ -90,7 +107,7 @@ func (s UserController) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	count, err := service.ItemsService.UpdateItem(user)
+	count, err := service.UsersService.UpdateUser(user)
 	log.Println("update count", count)
 
 	if err != nil {
@@ -103,13 +120,17 @@ func (s UserController) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("%s updated", user.Id)})
+	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("%d updated", user.Id)})
 }
 
 func (s UserController) RemoveUser(c *gin.Context) {
-	id := c.Param("id")
-
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusNotAcceptable, gin.H{"message": "id is not a number", "error": err.Error()})
+		return
+	}
 	count, err := service.UsersService.RemoveUser(id)
+	log.Println("users deleted", count)
 
 	if err != nil {
 		if err.Error() == "not found" {
@@ -121,5 +142,5 @@ func (s UserController) RemoveUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("%s removed.", id)})
+	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("%d removed.", id)})
 }

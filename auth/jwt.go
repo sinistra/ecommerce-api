@@ -4,22 +4,24 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
 	"os"
 	"strings"
 
 	"github.com/sinistra/ecommerce-api/domain"
+	"github.com/sinistra/ecommerce-api/service"
 	"github.com/sinistra/ecommerce-api/utils"
 )
 
-func GenerateToken(user domain.User) (string, error) {
+func GenerateToken(user domain.LoginRequest) (string, error) {
 	var err error
 	secret := os.Getenv("JWT_SECRET")
 	issuer := os.Getenv("JWT_ISSUER")
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": user.Email,
+		"username": user.Username,
 		"iss":      issuer,
 	})
 
@@ -131,6 +133,22 @@ func DecodeToken(c *gin.Context) string {
 	return "unknown"
 }
 
-func Validate(username, password string) bool {
-	return true
+func Validate(username, password string) (bool, error) {
+
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	passwordString := string(hashedPassword)
+	user, err := service.UsersService.GetUserByEmail(username)
+	if err != nil {
+		log.Println(err)
+		return false, err
+	}
+
+	log.Println(username, password)
+	log.Println(passwordString, user.Password)
+
+	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)) == nil {
+		return true, nil
+	}
+
+	return false, nil
 }

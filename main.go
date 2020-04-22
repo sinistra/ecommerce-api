@@ -47,6 +47,8 @@ func init() {
 
 func main() {
 
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
 	loginController := controllers.LoginController{}
 	itemController := controllers.ItemController{}
 	userController := controllers.UserController{}

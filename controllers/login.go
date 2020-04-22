@@ -13,46 +13,41 @@ import (
 // LoginController is a struct that provides the controller vehicle
 type LoginController struct{}
 
-// Login validates credentials and returns a JWT to be used on subsequent api calls
-// @Summary Login a user
-// @Description returns a JWT to be used on subsequent api calls
-// @Accept  json
-// @Produce  json
-// @Param   username     body    string     true        "UserId"
-// @Param   password     body    string     true        "Password"
-// @Success 200 {object} domain.JWT	"ok"
-// @Failure 400 {string} string "Bad Request"
-// @Failure 404 {string} string "Unauthorized"
-// @Router /login [post]
 func (u LoginController) Login(c *gin.Context) {
-	var user domain.User
+	var loginUser domain.LoginRequest
 	var jwt domain.JWT
 
-	if err := c.BindJSON(&user); err != nil {
+	if err := c.BindJSON(&loginUser); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "login failed binding.", "error": err.Error()})
-	}
-
-	if user.Email == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "email is missing.", "data": user})
-		return
-	}
-	if user.Password == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "password is missing.", "data": user})
 		return
 	}
 
-	// ok := auth.LdapValidate(user.Username, user.Password)
-	ok := auth.Validate(user.Email, user.Password)
+	if loginUser.Username == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "username is missing.", "data": loginUser})
+		return
+	}
+	if loginUser.Password == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "password is missing.", "data": loginUser})
+		return
+	}
+
+	ok, err := auth.Validate(loginUser.Username, loginUser.Password)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "validation failed", "data": loginUser})
+		return
+	}
 
 	if ok == false {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "authentication failed", "data": user})
+		log.Println("authentication failed", loginUser)
+		loginUser.Password = ""
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "authentication failed", "data": loginUser})
 		return
 	}
 
-	token, err := auth.GenerateToken(user)
-
+	token, err := auth.GenerateToken(loginUser)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "authentication failed", "data": loginUser})
 	}
 
 	jwt.Token = token
