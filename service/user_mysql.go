@@ -117,18 +117,16 @@ func (s usersService) UpdateUser(User domain.User) (int64, error) {
 	defer db.Close()
 
 	stmt, err := db.Prepare(queryUpdateUser)
-
 	if err != nil {
 		log.Println(err)
 	}
 	res, err := stmt.Exec(User.FirstName, User.LastName, User.Email, User.Status, User.Id)
-
 	if err != nil {
-		log.Println(err)
+		log.Println(err.Error())
 	}
 	rowCnt, err := res.RowsAffected()
 	if err != nil {
-		log.Println(err)
+		log.Println(err.Error())
 	}
 
 	return rowCnt, nil
@@ -140,16 +138,15 @@ func (s usersService) UpdatePassword(User domain.User) (int64, error) {
 
 	stmt, err := db.Prepare(queryUpdateUserPassword)
 	if err != nil {
-		log.Println(err)
+		log.Println(err.Error())
 	}
 	res, err := stmt.Exec(User.Password, User.Id)
-
 	if err != nil {
-		log.Println(err)
+		log.Println(err.Error())
 	}
 	rowCnt, err := res.RowsAffected()
 	if err != nil {
-		log.Println(err)
+		log.Println(err.Error())
 	}
 
 	return rowCnt, nil

@@ -108,19 +108,53 @@ func (s UserController) UpdateUser(c *gin.Context) {
 	}
 
 	count, err := service.UsersService.UpdateUser(user)
+	if err != nil {
+		log.Println(err)
+	}
 	log.Println("update count", count)
 
 	if err != nil {
-		if err.Error() == "not found" {
-			msg := fmt.Sprintf("%d not found.", user.Id)
-			c.JSON(http.StatusNotFound, gin.H{"message": msg, "error": err.Error()})
-			return
-		}
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Server error"})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("%d updated", user.Id)})
+}
+func (s UserController) UpdatePassword(c *gin.Context) {
+	// var user domain.User
+	request := make(map[string]string)
+
+	if err := c.BindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "post failed binding.", "error": err.Error()})
+		return
+	}
+	log.Println(request)
+
+	// if request.Email == "" {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"message": "missing fields"})
+	// 	return
+	// }
+	//
+	// if len(user.Password) > 0 {
+	// 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	// 	user.Password = string(hashedPassword)
+	// } else {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"message": "Password is missing"})
+	// 	return
+	// }
+
+	// count, err := service.UsersService.UpdatePassword(user)
+	// if err != nil {
+	// 	log.Println(err)
+	// }
+	// log.Println("update count", count)
+	//
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"message": "Server error"})
+	// 	return
+	// }
+
+	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("user updated")})
 }
 
 func (s UserController) RemoveUser(c *gin.Context) {
