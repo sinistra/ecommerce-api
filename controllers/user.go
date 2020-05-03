@@ -73,8 +73,7 @@ func (s UserController) AddUser(c *gin.Context) {
 	}
 
 	if len(user.Password) > 0 {
-		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-		user.Password = string(hashedPassword)
+		user.Password = encryptPassword(user.Password)
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Password is missing"})
 		return
@@ -129,32 +128,38 @@ func (s UserController) UpdatePassword(c *gin.Context) {
 		return
 	}
 	log.Println(request)
+	password, ok := request["password"]
+	if !ok {
+		msg := "password is not in the payload"
+		log.Println(msg)
+		c.JSON(http.StatusBadRequest, gin.H{"message": msg})
+		return
+	}
 
-	// if request.Email == "" {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"message": "missing fields"})
-	// 	return
-	// }
-	//
-	// if len(user.Password) > 0 {
-	// 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	// 	user.Password = string(hashedPassword)
-	// } else {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"message": "Password is missing"})
-	// 	return
-	// }
+	username, ok := request["username"]
+	if !ok {
+		msg := "username is not in the payload"
+		log.Println(msg)
+		c.JSON(http.StatusBadRequest, gin.H{"message": msg})
+		return
+	}
+	user, err := service.UsersService.GetUserByEmail(username)
+	if err != nil {
+		msg := fmt.Sprintf("could not find a record for %s", username)
+		log.Println(err)
+		c.JSON(http.StatusPreconditionFailed, gin.H{"message": msg})
+		return
+	}
+	user.Password = encryptPassword(password)
+	count, err := service.UsersService.UpdatePassword(user)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err})
+		return
+	}
 
-	// count, err := service.UsersService.UpdatePassword(user)
-	// if err != nil {
-	// 	log.Println(err)
-	// }
-	// log.Println("update count", count)
-	//
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"message": "Server error"})
-	// 	return
-	// }
-
-	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("user updated")})
+	log.Println("update count", count)
+	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("password updated")})
 }
 
 func (s UserController) RemoveUser(c *gin.Context) {

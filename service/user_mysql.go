@@ -15,9 +15,9 @@ const (
 	queryUpdateUser         = "UPDATE users SET first_name=?, last_name=?, email=?, status=? WHERE id=?;"
 	queryUpdateUserPassword = "UPDATE users SET password=? WHERE id=?;"
 	queryDeleteUser         = "DELETE FROM users WHERE id=?;"
+	queryTruncate           = "truncate users"
 )
 
-// type UserService struct{}
 var UsersService usersServiceInterface = &usersService{}
 
 type usersService struct{}
@@ -37,7 +37,7 @@ func (s usersService) GetUsers(keys map[string][]string) ([]domain.User, error) 
 	defer db.Close()
 	var users []domain.User
 
-	log.Println(keys)
+	// log.Println(keys)
 
 	sql := queryGetUsers
 	if len(keys) > 0 {
@@ -53,7 +53,7 @@ func (s usersService) GetUsers(keys map[string][]string) ([]domain.User, error) 
 	}
 
 	sql = sql + " ORDER BY id ASC"
-	log.Println(sql)
+	// log.Println(sql)
 	err := db.Select(&users, sql)
 	if err != nil {
 		log.Println(err)
@@ -169,4 +169,17 @@ func (s usersService) RemoveUser(id int) (int64, error) {
 	}
 
 	return rowsDeleted, nil
+}
+
+func TruncateUserTable() error {
+	db := driver.ConnectDB()
+	defer db.Close()
+
+	result, err := db.Exec(queryTruncate)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	log.Println(result)
+	return nil
 }

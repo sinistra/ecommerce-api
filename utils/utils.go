@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 	"math"
 	"net/http"
 	"os"
@@ -72,4 +73,9 @@ func CreateDirIfNotExist(dir string) {
 			panic(err)
 		}
 	}
+}
+
+func EncryptPassword(password string) string {
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	return string(hashedPassword)
 }
