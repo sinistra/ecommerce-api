@@ -33,12 +33,12 @@ func ConnectDB() *sqlx.DB {
 	db, err := sqlx.Connect(driver, dsn)
 	if err != nil {
 		log.Println(dsn)
-		log.Fatal(err.Error())
+		log.Println(err.Error())
 	}
 
 	err = db.Ping()
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Println(err.Error())
 	}
 
 	return db
@@ -47,7 +47,7 @@ func ConnectDB() *sqlx.DB {
 func ConnectMongo() *mgo.Session {
 	err := envconfig.Process("MONGO", &mongoDbc)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Println(err.Error())
 	}
 
 	var mongoUrl string
@@ -59,7 +59,7 @@ func ConnectMongo() *mgo.Session {
 	mongoSession, err := mgo.Dial(mongoUrl)
 	if err != nil {
 		//log.Println(mongoUrl)
-		log.Fatal(err.Error())
+		log.Println(err.Error())
 	}
 
 	return mongoSession

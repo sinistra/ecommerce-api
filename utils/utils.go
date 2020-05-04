@@ -1,10 +1,12 @@
 package utils
 
 import (
+	"crypto/rand"
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
+	"log"
 	"math"
 	"net/http"
 	"os"
@@ -78,4 +80,17 @@ func CreateDirIfNotExist(dir string) {
 func EncryptPassword(password string) string {
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return string(hashedPassword)
+}
+
+func MakeKey(keylen int) (string, error) {
+	key := make([]byte, keylen)
+	_, err := rand.Read(key)
+	if err != nil {
+		// handle error here
+		log.Println(err)
+		return "", err
+	}
+
+	log.Println(string(key))
+	return fmt.Sprintf("%x", key), nil
 }

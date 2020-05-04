@@ -8,9 +8,10 @@ import (
 )
 
 const (
-	queryInsertUser         = "INSERT INTO users(first_name, last_name, email, status, password) VALUES(?, ?, ?, ?, ?);"
+	queryInsertUser         = "INSERT INTO users(first_name, last_name, email, status, password, uuid) VALUES(?, ?, ?, ?, ?, ?);"
 	queryGetUser            = "SELECT * FROM users WHERE id=?;"
 	queryGetUserByEmail     = "SELECT * FROM users WHERE email=?"
+	queryGetUserByUUID      = "SELECT * FROM users WHERE uuid=?"
 	queryGetUsers           = "SELECT id, first_name, last_name, email, created_at, updated_at, status FROM users"
 	queryUpdateUser         = "UPDATE users SET first_name=?, last_name=?, email=?, status=? WHERE id=?;"
 	queryUpdateUserPassword = "UPDATE users SET password=? WHERE id=?;"
@@ -26,6 +27,7 @@ type usersServiceInterface interface {
 	GetUsers(map[string][]string) ([]domain.User, error)
 	GetUser(id int) (domain.User, error)
 	GetUserByEmail(email string) (domain.User, error)
+	GetUserByUUID(userId string) (domain.User, error)
 	AddUser(User domain.User) (int, error)
 	UpdateUser(User domain.User) (int64, error)
 	UpdatePassword(User domain.User) (int64, error)
@@ -85,6 +87,15 @@ func (s usersService) GetUserByEmail(email string) (domain.User, error) {
 
 	return user, err
 }
+func (s usersService) GetUserByUUID(userId string) (domain.User, error) {
+	db := driver.ConnectDB()
+	defer db.Close()
+	var user domain.User
+
+	err := db.Get(&user, queryGetUserByUUID, userId)
+
+	return user, err
+}
 
 func (s usersService) AddUser(User domain.User) (int, error) {
 	db := driver.ConnectDB()
@@ -94,7 +105,7 @@ func (s usersService) AddUser(User domain.User) (int, error) {
 	if err != nil {
 		log.Println(err)
 	}
-	res, err := stmt.Exec(User.FirstName, User.LastName, User.Email, User.Status, User.Password)
+	res, err := stmt.Exec(User.FirstName, User.LastName, User.Email, User.Status, User.Password, User.UUID)
 	if err != nil {
 		log.Println(err)
 		return 0, err

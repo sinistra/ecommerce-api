@@ -1,3 +1,3 @@
-# ecommerce-api
-ecommerce-api in go.
+# eco-api
+ecommerce api in go.
 

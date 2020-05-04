@@ -12,6 +12,7 @@ type User struct {
 	Email     string    `json:"email" binding:"required" db:"email"`
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
+	UUID      string    `json:"uuid" db:"uuid"`
 	Status    string    `json:"status" db:"status"`
 	Password  string    `json:"password, omitempty" db:"password"`
 }

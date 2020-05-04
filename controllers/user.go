@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"fmt"
-	"golang.org/x/crypto/bcrypt"
+	// "golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
 	"strconv"
@@ -12,6 +12,7 @@ import (
 
 	"github.com/sinistra/ecommerce-api/domain"
 	"github.com/sinistra/ecommerce-api/service"
+	"github.com/sinistra/ecommerce-api/utils"
 )
 
 // UserController is a struct that provides the controller vehicle
@@ -73,7 +74,7 @@ func (s UserController) AddUser(c *gin.Context) {
 	}
 
 	if len(user.Password) > 0 {
-		user.Password = encryptPassword(user.Password)
+		user.Password = utils.EncryptPassword(user.Password)
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Password is missing"})
 		return
@@ -150,7 +151,7 @@ func (s UserController) UpdatePassword(c *gin.Context) {
 		c.JSON(http.StatusPreconditionFailed, gin.H{"message": msg})
 		return
 	}
-	user.Password = encryptPassword(password)
+	user.Password = utils.EncryptPassword(password)
 	count, err := service.UsersService.UpdatePassword(user)
 	if err != nil {
 		log.Println(err)
