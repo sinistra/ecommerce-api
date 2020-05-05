@@ -3,7 +3,7 @@ package service
 import (
 	"database/sql"
 	"github.com/joho/godotenv"
-	uuid "github.com/satori/go.uuid"
+	"github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 	"log"
 	"testing"
