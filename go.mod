@@ -16,7 +16,6 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/satori/go.uuid v1.2.0
 	github.com/stretchr/testify v1.5.1
-	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14 // indirect
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.5.1
 	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2

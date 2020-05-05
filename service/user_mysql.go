@@ -1,6 +1,7 @@
 package service
 
 import (
+	"database/sql"
 	"log"
 
 	"github.com/sinistra/ecommerce-api/domain"
@@ -27,7 +28,7 @@ type usersServiceInterface interface {
 	GetUsers(map[string][]string) ([]domain.User, error)
 	GetUser(id int) (domain.User, error)
 	GetUserByEmail(email string) (domain.User, error)
-	GetUserByUUID(userId string) (domain.User, error)
+	GetUserByUUID(userId sql.NullString) (domain.User, error)
 	AddUser(User domain.User) (int, error)
 	UpdateUser(User domain.User) (int64, error)
 	UpdatePassword(User domain.User) (int64, error)
@@ -87,7 +88,7 @@ func (s usersService) GetUserByEmail(email string) (domain.User, error) {
 
 	return user, err
 }
-func (s usersService) GetUserByUUID(userId string) (domain.User, error) {
+func (s usersService) GetUserByUUID(userId sql.NullString) (domain.User, error) {
 	db := driver.ConnectDB()
 	defer db.Close()
 	var user domain.User
@@ -116,9 +117,9 @@ func (s usersService) AddUser(User domain.User) (int, error) {
 	}
 	rowCnt, err := res.RowsAffected()
 	if err != nil {
-		log.Println(err)
+		log.Println(err, rowCnt)
 	}
-	log.Printf("ID = %d, affected = %d\n", lastId, rowCnt)
+	// log.Printf("ID = %d, affected = %d\n", lastId, rowCnt)
 
 	return int(lastId), nil
 }
@@ -186,11 +187,10 @@ func TruncateUserTable() error {
 	db := driver.ConnectDB()
 	defer db.Close()
 
-	result, err := db.Exec(queryTruncate)
+	_, err := db.Exec(queryTruncate)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
-	log.Println(result)
 	return nil
 }

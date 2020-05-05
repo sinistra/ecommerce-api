@@ -1,5 +1,3 @@
-create schema if not exists `eco-test` collate utf8_general_ci;
-
 create table if not exists items
 (
     id int auto_increment
@@ -23,9 +21,9 @@ create table if not exists users
     first_name varchar(30) not null,
     last_name varchar(30) not null,
     email varchar(100) not null,
-    status varchar(10) not null,
+    status varchar(10) default 'unverified' not null,
     password varchar(100) not null,
-    uuid varchar(36) default '' not null,
+    uuid varchar(36) null,
     created_at datetime default CURRENT_TIMESTAMP not null,
     updated_at datetime default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP,
     constraint users_email_uindex
@@ -33,4 +31,3 @@ create table if not exists users
     constraint users_uuid_uindex
         unique (uuid)
 );
-
