@@ -1,7 +1,6 @@
 package service
 
 import (
-	"database/sql"
 	"github.com/joho/godotenv"
 	"github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
@@ -139,10 +138,8 @@ func Test_usersService_GetUserByUUID(t *testing.T) {
 	user.LastName = "Last"
 	user.Email = "user1@test.com"
 	user.Password = utils.EncryptPassword("password")
-	user.UUID = sql.NullString{
-		String: uuid.NewV4().String(),
-		Valid:  true,
-	}
+	uuidString := uuid.NewV4().String()
+	user.UUID = &uuidString
 
 	record1, err := s.AddUser(user)
 	assert.Nil(t, err)
@@ -170,10 +167,8 @@ func Test_usersService_RemoveUser(t *testing.T) {
 	user.LastName = "Last"
 	user.Email = "user1@test.com"
 	user.Password = utils.EncryptPassword("password")
-	user.UUID = sql.NullString{
-		String: uuid.NewV4().String(),
-		Valid:  true,
-	}
+	uuidString := uuid.NewV4().String()
+	user.UUID = &uuidString
 
 	record1, err := s.AddUser(user)
 	assert.Nil(t, err)
@@ -196,10 +191,8 @@ func Test_usersService_UpdatePassword(t *testing.T) {
 	user.LastName = "Last"
 	user.Email = "user1@test.com"
 	user.Password = utils.EncryptPassword("password")
-	user.UUID = sql.NullString{
-		String: uuid.NewV4().String(),
-		Valid:  true,
-	}
+	uuidString := uuid.NewV4().String()
+	user.UUID = &uuidString
 
 	record1, err := s.AddUser(user)
 	assert.Nil(t, err)
@@ -234,10 +227,8 @@ func Test_usersService_UpdateUser(t *testing.T) {
 	user.LastName = "Last"
 	user.Email = "user1@test.com"
 	user.Password = utils.EncryptPassword("password")
-	user.UUID = sql.NullString{
-		String: uuid.NewV4().String(),
-		Valid:  true,
-	}
+	uuidString := uuid.NewV4().String()
+	user.UUID = &uuidString
 
 	record1, err := s.AddUser(user)
 	assert.Nil(t, err)

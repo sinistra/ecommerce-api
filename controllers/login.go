@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
@@ -123,10 +122,7 @@ func (u LoginController) Register(c *gin.Context) {
 		Email:    loginUser.Username,
 		Password: encryptedPassword,
 		Status:   "unverified",
-		UUID: sql.NullString{
-			String: uuidAsString,
-			Valid:  true,
-		},
+		UUID:     &uuidAsString,
 	}
 	result, err := service.UsersService.AddUser(newUser)
 	if err != nil {
@@ -141,13 +137,13 @@ func (u LoginController) Register(c *gin.Context) {
 func (u LoginController) Verify(c *gin.Context) {
 	uuidString := c.Param("id")
 
-	user, err := service.UsersService.GetUserByUUID(uuidString)
+	user, err := service.UsersService.GetUserByUUID(&uuidString)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	user.UUID = ""
+	user.UUID = nil
 	user.Status = "Verified"
 	result, err := service.UsersService.UpdateUser(user)
 	if err != nil {
