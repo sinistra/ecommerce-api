@@ -17,7 +17,7 @@ const (
 	queryUpdateUser         = "UPDATE users SET first_name=?, last_name=?, email=?, status=? WHERE id=?;"
 	queryUpdateUserPassword = "UPDATE users SET password=? WHERE id=?;"
 	queryDeleteUser         = "DELETE FROM users WHERE id=?;"
-	queryTruncate           = "truncate users"
+	queryTruncateUsers      = "truncate users"
 )
 
 var UsersService usersServiceInterface = &usersService{}
@@ -187,7 +187,7 @@ func TruncateUserTable() error {
 	db := driver.ConnectDB()
 	defer db.Close()
 
-	_, err := db.Exec(queryTruncate)
+	_, err := db.Exec(queryTruncateUsers)
 	if err != nil {
 		log.Println(err)
 		return err

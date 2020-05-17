@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	// "golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
 	"strconv"
@@ -19,7 +18,6 @@ import (
 type UserController struct{}
 
 // Services is a slice of domain that controller functions will populate
-// var Items []domain.Item
 
 func (s UserController) GetUsers(c *gin.Context) {
 

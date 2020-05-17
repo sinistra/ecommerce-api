@@ -2,7 +2,7 @@ create table if not exists items
 (
     id int auto_increment
         primary key,
-    title varchar(30) not null,
+    code varchar(30) not null,
     description varchar(100) not null,
     seller int null,
     picture varchar(100) not null,
