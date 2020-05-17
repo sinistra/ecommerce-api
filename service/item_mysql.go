@@ -90,14 +90,17 @@ func (s itemsService) AddItem(Item domain.Item) (int, error) {
 		Item.AvailableQuantity, Item.SoldQuantity, Item.Status)
 	if err != nil {
 		log.Println(err)
+		return 0, err
 	}
 	lastId, err := res.LastInsertId()
 	if err != nil {
 		log.Println(err)
+		return 0, err
 	}
 	rowCnt, err := res.RowsAffected()
 	if err != nil {
 		log.Println(err)
+		return 0, err
 	}
 	log.Printf("Id = %d, affected = %d\n", lastId, rowCnt)
 

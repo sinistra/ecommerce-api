@@ -24,7 +24,7 @@ func TestTruncateItemTable(t *testing.T) {
 }
 
 func Test_itemsService_AddItem(t *testing.T) {
-	err := TruncateUserTable()
+	err := TruncateItemTable()
 	assert.Nil(t, err)
 
 	item := domain.Item{}
@@ -42,14 +42,16 @@ func Test_itemsService_AddItem(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, got, 1)
 
+	log.Println("start item 2")
+
 	got, err = s.AddItem(item)
 	if err != nil {
 		log.Println(err)
 	}
-	assert.Equal(t, got, 0)
 	assert.EqualError(t, err, "Error 1062: Duplicate entry 'product-code' for key 'items_code_uindex'")
+	assert.Equal(t, got, 0)
 
-	log.Println("start item 2")
+	log.Println("start item 3")
 
 	item.Code = "product-code2"
 	item.Description = "2nd Product Description"
