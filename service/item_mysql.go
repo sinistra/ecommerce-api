@@ -25,6 +25,7 @@ type itemsService struct{}
 type itemsServiceInterface interface {
 	GetItems(map[string][]string) ([]domain.Item, error)
 	GetItem(id int) (domain.Item, error)
+	GetItemByCode(code string) (domain.Item, error)
 	AddItem(Item domain.Item) (int, error)
 	UpdateItem(Item domain.Item) (int64, error)
 	RemoveItem(id int) (int64, error)
@@ -112,19 +113,21 @@ func (s itemsService) UpdateItem(Item domain.Item) (int64, error) {
 	defer db.Close()
 
 	stmt, err := db.Prepare(queryUpdateItem)
-
 	if err != nil {
 		log.Println(err)
+		return 0, err
 	}
 	res, err := stmt.Exec(Item.Code, Item.Description, Item.Seller, Item.Picture, Item.Price, Item.AvailableQuantity,
 		Item.SoldQuantity, Item.Status, Item.Id)
 
 	if err != nil {
 		log.Println(err)
+		return 0, err
 	}
 	rowCnt, err := res.RowsAffected()
 	if err != nil {
 		log.Println(err)
+		return rowCnt, err
 	}
 
 	return rowCnt, nil
