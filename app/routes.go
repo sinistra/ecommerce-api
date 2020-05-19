@@ -23,7 +23,7 @@ func mapUrls() {
 	router.POST("/login", loginController.Login)
 	router.POST("/auth/register", loginController.Register)
 	router.POST("/auth/update", userController.UpdatePassword)
-	router.POST("/auth/verify/:id", loginController.Verify)
+	router.GET("/auth/verify/:id", loginController.Verify)
 	router.GET("/checktoken", loginController.CheckForToken)
 	router.GET("/testauth", auth.JWTVerifyMiddleWare, loginController.TestAuth)
 

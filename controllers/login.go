@@ -80,55 +80,64 @@ func (u LoginController) TestAuth(c *gin.Context) {
 }
 
 func (u LoginController) Register(c *gin.Context) {
-	var loginUser domain.LoginRequest
+	var newUser domain.User
 
-	if err := c.BindJSON(&loginUser); err != nil {
+	if err := c.BindJSON(&newUser); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "login failed binding.", "error": err.Error()})
 		return
 	}
 
-	if loginUser.Username == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "username is missing.", "data": loginUser})
+	if newUser.Email == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "email is missing.", "data": newUser})
 		return
 	}
-	if loginUser.Password == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "password is missing.", "data": loginUser})
+	if newUser.Password == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "password is missing.", "data": newUser})
 		return
 	}
 
-	user, err := service.UsersService.GetUserByEmail(loginUser.Username)
+	existingUser, err := service.UsersService.GetUserByEmail(newUser.Email)
 	if err != nil {
 		log.Println(err)
 		if err.Error() != "sql: no rows in result set" {
-			c.JSON(http.StatusInternalServerError, gin.H{"message": "cannot read user.", "data": loginUser})
+			newUser.Password = ""
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "error finding user.", "data": newUser})
 			return
 		}
 	}
 
-	if user.Id > 0 {
+	if existingUser.Id > 0 {
 		msg := "User already exists."
-		loginUser.Password = ""
+		newUser.Password = ""
 		log.Println(msg)
-		c.JSON(http.StatusBadRequest, gin.H{"message": msg, "data": loginUser})
+		c.JSON(http.StatusBadRequest, gin.H{"message": msg, "data": newUser})
 		return
 	}
 
-	// spew.Dump(user)
-	encryptedPassword := utils.EncryptPassword(loginUser.Password)
+	// spew.Dump(newUser)
+	encryptedPassword := utils.EncryptPassword(newUser.Password)
 	uuidV4 := uuid.NewV4()
 	uuidAsString := fmt.Sprintf("%s", uuidV4)
 	// log.Println(uuidAsString)
-	newUser := domain.User{
-		Email:    loginUser.Username,
-		Password: encryptedPassword,
-		Status:   "unverified",
-		UUID:     &uuidAsString,
+	user := domain.User{
+		Email:     newUser.Email,
+		FirstName: newUser.FirstName,
+		LastName:  newUser.LastName,
+		Password:  encryptedPassword,
+		Status:    "unverified",
+		UUID:      &uuidAsString,
 	}
-	result, err := service.UsersService.AddUser(newUser)
+
+	// spew.Dump(user)
+	result, err := service.UsersService.AddUser(user)
 	if err != nil {
 		log.Println(err)
+		user.Password = ""
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error adding user to db", "data": newUser})
+		return
+
 	}
-	log.Println(result)
+	// log.Println(result)
 	newUser.Id = result
 
 	c.JSON(http.StatusOK, gin.H{"message": "ok", "data": result})

@@ -66,7 +66,7 @@ func (s ItemController) AddItem(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "service failed binding.", "error": err.Error()})
 	}
 
-	if item.Title == "" {
+	if item.Code == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Enter missing fields"})
 		return
 	}
@@ -87,7 +87,7 @@ func (s ItemController) UpdateItem(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "item failed binding.", "error": err.Error()})
 	}
 
-	if item.Id < 1 || item.Title == "" {
+	if item.Id < 1 || item.Code == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "missing fields"})
 		return
 	}
@@ -105,7 +105,7 @@ func (s ItemController) UpdateItem(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("%s updated", item.Id)})
+	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("item %d updated", item.Id)})
 }
 
 func (s ItemController) RemoveItem(c *gin.Context) {
@@ -128,5 +128,5 @@ func (s ItemController) RemoveItem(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("%s removed.", id)})
+	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("item %d removed.", id)})
 }
