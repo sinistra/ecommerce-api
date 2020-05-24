@@ -24,10 +24,6 @@ func (s UserController) GetUsers(c *gin.Context) {
 	request["lastname"] = c.DefaultQuery("lastname", "")
 	request["status"] = c.DefaultQuery("status", "")
 
-	// if err := c.BindJSON(&request); err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"message": "users failed binding.", "error": err.Error()})
-	// 	return
-	// }
 	log.Println(request)
 
 	users, err := service.UsersService.GetUsers(request)

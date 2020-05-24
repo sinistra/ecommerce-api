@@ -20,16 +20,11 @@ type ItemController struct{}
 
 func (s ItemController) GetItems(c *gin.Context) {
 
-	request := make(map[string][]string)
-	if err := c.BindJSON(&request); err != nil {
-		if err.Error() != "EOF" {
-			c.JSON(http.StatusBadRequest, gin.H{"message": "items failed binding.", "error": err.Error()})
-			return
-		}
-	}
+	request := make(map[string]string)
+	// request["firstname"] = c.DefaultQuery("firstname", "")
+
 	// log.Println(request)
 
-	// var items []domain.Item
 	items, err := service.ItemsService.GetItems(request)
 
 	if err != nil {

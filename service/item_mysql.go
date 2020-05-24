@@ -23,7 +23,7 @@ var ItemsService itemsServiceInterface = &itemsService{}
 type itemsService struct{}
 
 type itemsServiceInterface interface {
-	GetItems(map[string][]string) ([]domain.Item, error)
+	GetItems(map[string]string) ([]domain.Item, error)
 	GetItem(id int) (domain.Item, error)
 	GetItemByCode(code string) (domain.Item, error)
 	AddItem(Item domain.Item) (int, error)
@@ -31,20 +31,21 @@ type itemsServiceInterface interface {
 	RemoveItem(id int) (int64, error)
 }
 
-func (s itemsService) GetItems(keys map[string][]string) ([]domain.Item, error) {
+func (s itemsService) GetItems(keys map[string]string) ([]domain.Item, error) {
 	db := driver.ConnectDB()
 	defer db.Close()
 	var items []domain.Item
 
 	sql := queryGetItems
-	if len(keys) > 0 {
-		count := 0
-		sql = sql + " WHERE"
-		for index, key := range keys {
+	count := 0
+	for index, key := range keys {
+		if len(key) > 0 {
 			if count > 0 {
 				sql = sql + " AND"
+			} else {
+				sql = sql + " WHERE"
 			}
-			sql = sql + " " + index + "='" + key[0] + "'"
+			sql = sql + " " + index + "='" + key + "'"
 			count++
 		}
 	}

@@ -84,7 +84,7 @@ func Test_itemsService_GetItem(t *testing.T) {
 }
 
 func Test_itemsService_GetItems(t *testing.T) {
-	keys := make(map[string][]string)
+	keys := make(map[string]string)
 	got, err := ItemsService.GetItems(keys)
 
 	assert.Nil(t, err)
