@@ -34,16 +34,15 @@ func (u LoginController) Login(c *gin.Context) {
 		return
 	}
 
-	ok, err := auth.Validate(loginUser.Username, loginUser.Password)
+	user, err := auth.Validate(loginUser.Username, loginUser.Password)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "validation failed", "data": loginUser})
-		return
-	}
-
-	if ok == false {
-		log.Println("authentication failed", loginUser)
 		loginUser.Password = ""
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "authentication failed", "data": loginUser})
+		if err.Error() == "user failed validation" {
+			log.Println("authentication failed", loginUser)
+			c.JSON(http.StatusUnauthorized, gin.H{"message": "authentication failed", "data": loginUser})
+			return
+		}
+		c.JSON(http.StatusBadRequest, gin.H{"message": "validation failed", "data": loginUser})
 		return
 	}
 
@@ -54,6 +53,10 @@ func (u LoginController) Login(c *gin.Context) {
 	}
 
 	jwt.Token = token
+	jwt.UserName = user.Email
+	jwt.FirstName = user.FirstName
+	jwt.LastName = user.LastName
+	jwt.Status = user.Status
 	c.JSON(http.StatusOK, gin.H{"message": "ok", "data": jwt})
 }
 

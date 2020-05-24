@@ -7,6 +7,7 @@ import (
 type Item struct {
 	Id                int       `json:"id" db:"id"`
 	Code              string    `json:"code" db:"code"`
+	Title             string    `json:"title" db:"title"`
 	Description       string    `json:"description" db:"description"`
 	Seller            int64     `json:"seller" db:"seller"`
 	Picture           string    `json:"picture" db:"picture"`

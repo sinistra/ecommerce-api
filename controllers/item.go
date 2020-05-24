@@ -22,9 +22,12 @@ func (s ItemController) GetItems(c *gin.Context) {
 
 	request := make(map[string][]string)
 	if err := c.BindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "items failed binding.", "error": err.Error()})
+		if err.Error() != "EOF" {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "items failed binding.", "error": err.Error()})
+			return
+		}
 	}
-	log.Println(request)
+	// log.Println(request)
 
 	// var items []domain.Item
 	items, err := service.ItemsService.GetItems(request)

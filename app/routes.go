@@ -35,8 +35,9 @@ func mapUrls() {
 	api.PUT("/users", userController.UpdateUser)
 	api.DELETE("/users/:id", userController.RemoveUser)
 
-	api.GET("/items", itemController.GetItems)
-	api.GET("/items/:id", itemController.GetItem)
+	// the 1st 2 routes are unsecured
+	router.POST("/items", itemController.GetItems)
+	router.GET("/items/:id", itemController.GetItem)
 	api.POST("/items", itemController.AddItem)
 	api.PUT("/items", itemController.UpdateItem)
 	api.DELETE("/items/:id", itemController.RemoveItem)

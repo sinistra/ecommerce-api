@@ -3,7 +3,8 @@ create table if not exists items
     id int auto_increment
         primary key,
     code varchar(30) not null,
-    description varchar(100) not null,
+    title varchar(50) not null,
+    description varchar(200) not null,
     seller int null,
     picture varchar(100) not null,
     price decimal(10,2) default 0.00 null,

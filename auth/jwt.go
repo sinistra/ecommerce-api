@@ -76,7 +76,6 @@ func JWTVerifyMiddleWare(c *gin.Context) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("there was an error")
 			}
-
 			return []byte(secret), nil
 		})
 
@@ -133,22 +132,22 @@ func DecodeToken(c *gin.Context) string {
 	return "unknown"
 }
 
-func Validate(username, password string) (bool, error) {
+func Validate(username, password string) (*domain.User, error) {
 
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	passwordString := string(hashedPassword)
 	user, err := service.UsersService.GetUserByEmail(username)
 	if err != nil {
 		log.Println(err)
-		return false, err
+		return nil, err
 	}
 
 	log.Println(username, password)
 	log.Println(passwordString, user.Password)
 
 	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)) == nil {
-		return true, nil
+		return &user, nil
 	}
 
-	return false, nil
+	return nil, fmt.Errorf("user failed validation")
 }
