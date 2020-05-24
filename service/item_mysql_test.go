@@ -29,6 +29,7 @@ func Test_itemsService_AddItem(t *testing.T) {
 
 	item := domain.Item{}
 	item.Code = "product-code"
+	item.Title = "product title"
 	item.Description = "Product Description"
 	item.Status = "Active"
 	item.Seller = 99

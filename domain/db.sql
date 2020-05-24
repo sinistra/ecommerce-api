@@ -12,7 +12,9 @@ create table if not exists items
     qty_sold int not null,
     status varchar(10) not null,
     created_at datetime default CURRENT_TIMESTAMP not null,
-    updated_at datetime default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP
+    updated_at datetime default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP,
+        constraint items_code_uindex
+        unique (code)
 );
 
 create table if not exists users
