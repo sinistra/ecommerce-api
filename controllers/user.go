@@ -17,15 +17,17 @@ import (
 // UserController is a struct that provides the controller vehicle
 type UserController struct{}
 
-// Services is a slice of domain that controller functions will populate
-
 func (s UserController) GetUsers(c *gin.Context) {
 
-	request := make(map[string][]string)
-	if err := c.BindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "items failed binding.", "error": err.Error()})
-		return
-	}
+	request := make(map[string]string)
+	request["firstname"] = c.DefaultQuery("firstname", "")
+	request["lastname"] = c.DefaultQuery("lastname", "")
+	request["status"] = c.DefaultQuery("status", "")
+
+	// if err := c.BindJSON(&request); err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"message": "users failed binding.", "error": err.Error()})
+	// 	return
+	// }
 	log.Println(request)
 
 	users, err := service.UsersService.GetUsers(request)

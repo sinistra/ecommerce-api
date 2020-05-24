@@ -75,7 +75,7 @@ func Test_usersService_GetUsers(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, user2, 2)
 
-	keys := make(map[string][]string)
+	keys := make(map[string]string)
 	got, err := s.GetUsers(keys)
 	assert.Nil(t, err)
 	// spew.Dump(got)

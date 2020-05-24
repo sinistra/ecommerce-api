@@ -25,7 +25,7 @@ var UsersService usersServiceInterface = &usersService{}
 type usersService struct{}
 
 type usersServiceInterface interface {
-	GetUsers(map[string][]string) ([]domain.User, error)
+	GetUsers(map[string]string) ([]domain.User, error)
 	GetUser(id int) (domain.User, error)
 	GetUserByEmail(email string) (domain.User, error)
 	GetUserByUUID(userId *string) (domain.User, error)
@@ -35,28 +35,29 @@ type usersServiceInterface interface {
 	RemoveUser(id int) (int64, error)
 }
 
-func (s usersService) GetUsers(keys map[string][]string) ([]domain.User, error) {
+func (s usersService) GetUsers(keys map[string]string) ([]domain.User, error) {
 	db := driver.ConnectDB()
 	defer db.Close()
 	var users []domain.User
 
-	// log.Println(keys)
+	log.Println(keys)
 
 	sql := queryGetUsers
-	if len(keys) > 0 {
-		count := 0
-		sql = sql + " WHERE"
-		for index, key := range keys {
+	count := 0
+	for index, key := range keys {
+		if len(key) > 0 {
 			if count > 0 {
 				sql = sql + " AND"
+			} else {
+				sql = sql + " WHERE"
 			}
-			sql = sql + " " + index + "='" + key[0] + "'"
+			sql = sql + " " + index + "='" + key + "'"
 			count++
 		}
 	}
 
 	sql = sql + " ORDER BY id ASC"
-	// log.Println(sql)
+	log.Println(sql)
 	err := db.Select(&users, sql)
 	if err != nil {
 		log.Println(err)
