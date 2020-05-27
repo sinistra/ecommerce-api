@@ -136,14 +136,15 @@ func (u LoginController) Register(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		user.Password = ""
-		c.JSON(http.StatusBadRequest, gin.H{"message": "error adding user to db", "data": newUser})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error adding user to db", "data": user})
 		return
 
 	}
 	// log.Println(result)
-	newUser.Id = result
+	user.Id = result
+	user.Password = ""
 
-	c.JSON(http.StatusOK, gin.H{"message": "ok", "data": result})
+	c.JSON(http.StatusOK, gin.H{"message": "ok", "data": user})
 }
 
 func (u LoginController) Verify(c *gin.Context) {
@@ -156,7 +157,7 @@ func (u LoginController) Verify(c *gin.Context) {
 	}
 
 	user.UUID = nil
-	user.Status = "Verified"
+	user.Status = "verified"
 	result, err := service.UsersService.UpdateUser(user)
 	if err != nil {
 		log.Println(err)
