@@ -15,9 +15,7 @@ import (
 // ItemController is a struct that provides the controller vehicle
 type ItemController struct{}
 
-// Services is a slice of domain that controller functions will populate
-// var Items []domain.Item
-
+// GetItems returns a slice of items from db
 func (s ItemController) GetItems(c *gin.Context) {
 
 	request := make(map[string]string)
