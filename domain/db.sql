@@ -11,6 +11,7 @@ create table if not exists items
     qty_avail int not null,
     qty_sold int not null,
     status varchar(10) not null,
+    featured boolean default false,
     created_at datetime default CURRENT_TIMESTAMP not null,
     updated_at datetime default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP,
         constraint items_code_uindex
