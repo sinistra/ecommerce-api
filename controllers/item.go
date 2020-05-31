@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
 	"io"
 	"log"
 	"mime/multipart"
@@ -110,7 +109,7 @@ func (s ItemController) UpdateItem(c *gin.Context) {
 		item.Image = *imagePath
 	}
 
-	spew.Dump(item)
+	// spew.Dump(item)
 	count, err := service.ItemsService.UpdateItem(item)
 	if err != nil {
 		if err.Error() == "not found" {
