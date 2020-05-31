@@ -6,7 +6,7 @@ create table if not exists items
     title varchar(50) not null,
     description varchar(200) not null,
     seller int null,
-    picture varchar(100) not null,
+    image varchar(100) not null,
     price decimal(10,2) default 0.00 null,
     qty_avail int not null,
     qty_sold int not null,
@@ -14,6 +14,7 @@ create table if not exists items
     featured boolean default false,
     created_at datetime default CURRENT_TIMESTAMP not null,
     updated_at datetime default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP,
+    deleted boolean default false,
         constraint items_code_uindex
         unique (code)
 );

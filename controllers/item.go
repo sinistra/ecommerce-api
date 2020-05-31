@@ -2,14 +2,20 @@ package controllers
 
 import (
 	"fmt"
+	"github.com/davecgh/go-spew/spew"
+	"io"
 	"log"
+	"mime/multipart"
 	"net/http"
+	"os"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/sinistra/ecommerce-api/domain"
 	"github.com/sinistra/ecommerce-api/service"
+	"github.com/sinistra/ecommerce-api/utils"
 )
 
 // ItemController is a struct that provides the controller vehicle
@@ -78,9 +84,11 @@ func (s ItemController) AddItem(c *gin.Context) {
 
 func (s ItemController) UpdateItem(c *gin.Context) {
 	var item domain.Item
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
-	if err := c.BindJSON(&item); err != nil {
+	if err := c.Bind(&item); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "item failed binding.", "error": err.Error()})
+		return
 	}
 
 	if item.Id < 1 || item.Code == "" {
@@ -88,9 +96,22 @@ func (s ItemController) UpdateItem(c *gin.Context) {
 		return
 	}
 
-	count, err := service.ItemsService.UpdateItem(item)
-	log.Println("items updated", count)
+	file, header, err := c.Request.FormFile("upload")
+	if err != nil {
+		log.Println("image upload empty or there was an error.", err)
+	} else {
+		imagePath, err := saveImage(file, header, item.Code)
+		if err != nil {
+			msg := "cannot save image"
+			log.Println(msg)
+			c.JSON(http.StatusInternalServerError, gin.H{"message": msg, "error": err.Error()})
+			return
+		}
+		item.Image = *imagePath
+	}
 
+	spew.Dump(item)
+	count, err := service.ItemsService.UpdateItem(item)
 	if err != nil {
 		if err.Error() == "not found" {
 			msg := fmt.Sprintf("%d not found.", item.Id)
@@ -100,8 +121,40 @@ func (s ItemController) UpdateItem(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Server error"})
 		return
 	}
+	log.Println("items updated", count)
 
-	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("item %d updated", item.Id)})
+	item, err = service.ItemsService.GetItem(item.Id)
+	if err != nil {
+		log.Println(err)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("item %d updated", item.Id), "data": item})
+}
+
+func saveImage(file multipart.File, header *multipart.FileHeader, itemCode string) (*string, error) {
+	filename := header.Filename
+	// log.Println(filename)
+	fileParts := strings.Split(filename, ".")
+	// spew.Dump(fileParts)
+
+	utils.CreateDirIfNotExist("public/images")
+	log.Println("Upload successful")
+
+	imagePath := "images/" + itemCode + "." + fileParts[1]
+	out, err := os.Create("./public/" + imagePath)
+
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	defer out.Close()
+	_, err = io.Copy(out, file)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	return &imagePath, nil
 }
 
 func (s ItemController) RemoveItem(c *gin.Context) {

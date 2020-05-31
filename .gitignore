@@ -16,3 +16,4 @@
 *.out
 /certs/cert.pem
 *.env
+/public/images/
