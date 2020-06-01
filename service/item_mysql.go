@@ -8,11 +8,11 @@ import (
 )
 
 const (
-	queryInsertItem    = "INSERT INTO items(code, title, description, seller, image, price, qty_avail, qty_sold, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);"
+	queryInsertItem    = "INSERT INTO items(code, title, description, seller, image, price, qty_avail, qty_sold, status, featured) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
 	queryGetItem       = "SELECT * FROM items WHERE id=?;"
 	queryGetItemByCode = "SELECT * FROM items WHERE code=?;"
 	queryGetItems      = "SELECT * FROM items"
-	queryUpdateItem    = "UPDATE items SET code=?, title=?, description=?, seller=?, image=?, price=?, qty_avail=?, qty_sold=?, status=? WHERE id=?;"
+	queryUpdateItem    = "UPDATE items SET code=?, title=?, description=?, seller=?, image=?, price=?, qty_avail=?, qty_sold=?, status=?, featured=? WHERE id=?;"
 	queryDeleteItem    = "DELETE FROM items WHERE id=?;"
 	queryTruncateItems = "TRUNCATE items"
 )
@@ -89,7 +89,7 @@ func (s itemsService) AddItem(Item domain.Item) (int, error) {
 		log.Println(err)
 	}
 	res, err := stmt.Exec(Item.Code, Item.Title, Item.Description, Item.Seller, Item.Image, Item.Price,
-		Item.AvailableQuantity, Item.SoldQuantity, Item.Status)
+		Item.AvailableQuantity, Item.SoldQuantity, Item.Status, Item.Featured)
 	if err != nil {
 		log.Println(err)
 		return 0, err
@@ -119,7 +119,7 @@ func (s itemsService) UpdateItem(Item domain.Item) (int64, error) {
 		return 0, err
 	}
 	res, err := stmt.Exec(Item.Code, Item.Title, Item.Description, Item.Seller, Item.Image, Item.Price, Item.AvailableQuantity,
-		Item.SoldQuantity, Item.Status, Item.Id)
+		Item.SoldQuantity, Item.Status, Item.Featured, Item.Id)
 
 	if err != nil {
 		log.Println(err)

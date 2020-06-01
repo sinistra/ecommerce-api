@@ -141,8 +141,8 @@ func saveImage(file multipart.File, header *multipart.FileHeader, itemCode strin
 	utils.CreateDirIfNotExist("public/images")
 	log.Println("Upload successful")
 
-	imagePath := "images/" + itemCode + "." + fileParts[1]
-	out, err := os.Create("./public/" + imagePath)
+	imagePath := itemCode + "." + fileParts[1]
+	out, err := os.Create("./public/images/" + imagePath)
 
 	if err != nil {
 		log.Println(err)
