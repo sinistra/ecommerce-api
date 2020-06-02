@@ -17,3 +17,6 @@
 /certs/cert.pem
 *.env
 /public/images/
+
+
+.DS_Store
