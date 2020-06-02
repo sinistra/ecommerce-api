@@ -62,9 +62,11 @@ func (s ItemController) GetItem(c *gin.Context) {
 
 func (s ItemController) AddItem(c *gin.Context) {
 	var item domain.Item
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
-	if err := c.BindJSON(&item); err != nil {
+	if err := c.Bind(&item); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "service failed binding.", "error": err.Error()})
+		return
 	}
 
 	if item.Code == "" {
@@ -72,13 +74,30 @@ func (s ItemController) AddItem(c *gin.Context) {
 		return
 	}
 
+	imagePtr, err := processImage(c, item)
+	if err != nil {
+		msg := "cannot save image"
+		log.Println(msg)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": msg, "error": err.Error()})
+		return
+	}
+
+	item.Image = *imagePtr
+
 	itemID, err := service.ItemsService.AddItem(item)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "ok", "data": itemID})
+	item, err = service.ItemsService.GetItem(itemID)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "ok", "data": item})
 }
 
 func (s ItemController) UpdateItem(c *gin.Context) {
@@ -95,19 +114,15 @@ func (s ItemController) UpdateItem(c *gin.Context) {
 		return
 	}
 
-	file, header, err := c.Request.FormFile("upload")
+	imagePtr, err := processImage(c, item)
 	if err != nil {
-		log.Println("image upload empty or there was an error.", err)
-	} else {
-		imagePath, err := saveImage(file, header, item.Code)
-		if err != nil {
-			msg := "cannot save image"
-			log.Println(msg)
-			c.JSON(http.StatusInternalServerError, gin.H{"message": msg, "error": err.Error()})
-			return
-		}
-		item.Image = *imagePath
+		msg := "cannot save image"
+		log.Println(msg)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": msg, "error": err.Error()})
+		return
 	}
+
+	item.Image = *imagePtr
 
 	// spew.Dump(item)
 	count, err := service.ItemsService.UpdateItem(item)
@@ -130,6 +145,25 @@ func (s ItemController) UpdateItem(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("item %d updated", item.Id), "data": item})
+}
+
+func processImage(c *gin.Context, item domain.Item) (*string, error) {
+	file, header, err := c.Request.FormFile("upload")
+	var imagePath *string
+	if err != nil {
+		log.Println("image upload empty or there was an error.", err)
+		return nil, err
+	} else {
+		imagePath, err = saveImage(file, header, item.Code)
+		if err != nil {
+			msg := "cannot save image"
+			log.Println(msg, err)
+			// c.JSON(http.StatusInternalServerError, gin.H{"message": msg, "error": err.Error()})
+			return nil, err
+		}
+		// item.Image = *imagePath
+	}
+	return imagePath, nil
 }
 
 func saveImage(file multipart.File, header *multipart.FileHeader, itemCode string) (*string, error) {
