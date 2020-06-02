@@ -11,8 +11,8 @@ const (
 	queryInsertItem    = "INSERT INTO items(code, title, description, seller, image, price, qty_avail, qty_sold, status, featured) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
 	queryGetItem       = "SELECT * FROM items WHERE id=?;"
 	queryGetItemByCode = "SELECT * FROM items WHERE code=?;"
-	queryGetItems      = "SELECT * FROM items"
-	queryUpdateItem    = "UPDATE items SET code=?, title=?, description=?, seller=?, image=?, price=?, qty_avail=?, qty_sold=?, status=?, featured=? WHERE id=?;"
+	queryGetItems      = "SELECT * FROM items where deleted=0"
+	queryUpdateItem    = "UPDATE items SET code=?, title=?, description=?, seller=?, image=?, price=?, qty_avail=?, qty_sold=?, status=?, featured=?, deleted=? WHERE id=?;"
 	queryDeleteItem    = "DELETE FROM items WHERE id=?;"
 	queryTruncateItems = "TRUNCATE items"
 )
@@ -37,17 +37,9 @@ func (s itemsService) GetItems(keys map[string]string) ([]domain.Item, error) {
 	var items []domain.Item
 
 	sql := queryGetItems
-	count := 0
+
 	for index, key := range keys {
-		if len(key) > 0 {
-			if count > 0 {
-				sql = sql + " AND"
-			} else {
-				sql = sql + " WHERE"
-			}
-			sql = sql + " " + index + "='" + key + "'"
-			count++
-		}
+		sql = sql + " AND " + index + "='" + key + "'"
 	}
 
 	sql = sql + " ORDER BY id ASC"
@@ -119,7 +111,7 @@ func (s itemsService) UpdateItem(Item domain.Item) (int64, error) {
 		return 0, err
 	}
 	res, err := stmt.Exec(Item.Code, Item.Title, Item.Description, Item.Seller, Item.Image, Item.Price, Item.AvailableQuantity,
-		Item.SoldQuantity, Item.Status, Item.Featured, Item.Id)
+		Item.SoldQuantity, Item.Status, Item.Featured, Item.Deleted, Item.Id)
 
 	if err != nil {
 		log.Println(err)

@@ -116,13 +116,15 @@ func (s ItemController) UpdateItem(c *gin.Context) {
 
 	imagePtr, err := processImage(c, item)
 	if err != nil {
-		msg := "cannot save image"
-		log.Println(msg)
-		c.JSON(http.StatusInternalServerError, gin.H{"message": msg, "error": err.Error()})
-		return
+		if err.Error() != "http: no such file" {
+			msg := "cannot save image"
+			log.Println(msg)
+			c.JSON(http.StatusInternalServerError, gin.H{"message": msg, "error": err.Error()})
+			return
+		}
+	} else {
+		item.Image = *imagePtr
 	}
-
-	item.Image = *imagePtr
 
 	// spew.Dump(item)
 	count, err := service.ItemsService.UpdateItem(item)
