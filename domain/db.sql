@@ -1,21 +1,23 @@
+create schema if not exists `eco-prod` collate utf8_general_ci;
+
 create table if not exists items
 (
     id int auto_increment
         primary key,
     code varchar(30) not null,
     title varchar(50) not null,
-    description varchar(200) not null,
+    description varchar(100) not null,
     seller int null,
     image varchar(100) not null,
     price decimal(10,2) default 0.00 null,
     qty_avail int not null,
     qty_sold int not null,
     status varchar(10) not null,
-    featured boolean default false,
+    featured tinyint(1) default 0 not null,
     created_at datetime default CURRENT_TIMESTAMP not null,
     updated_at datetime default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP,
-    deleted boolean default false,
-        constraint items_code_uindex
+    deleted tinyint(1) default 0 not null,
+    constraint items_code_uindex
         unique (code)
 );
 
@@ -36,3 +38,4 @@ create table if not exists users
     constraint users_uuid_uindex
         unique (uuid)
 );
+
