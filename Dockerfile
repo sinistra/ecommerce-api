@@ -1,17 +1,27 @@
-FROM golang:1.14-alpine3.12
+FROM golang:1.14 AS builder
 
 RUN mkdir /app
+#add source code to /app folder
 ADD . /app
 WORKDIR /app
-# Add this go mod download command to pull in any dependencies
+# Call go mod command to pull in any dependencies
 RUN go mod download
-# Our project will now successfully build with the necessary go libraries included.
-RUN go build -o api .
+# Project will now successfully build with the necessary libraries included.
+# RUN go build -o api .
+RUN CGO_ENABLED=0 GOOS=linux go build -o api .
 
-COPY prod.env .env
+#lightweight container to start with
+FROM alpine:latest AS production
+#set pwd to /
+WORKDIR /
+# Copy the compiled app from the builder to production
+COPY --from=builder /app/api .
+# copy the production env file from dev
+COPY ./prod.env .env
+
 EXPOSE 8000
+# set GIN-GONIC to release mode
 ENV GIN_MODE=release
 
-# Our start command which kicks off
-# our newly created binary executable
-CMD ["/app/api"]
+# Start command which kicks off binary executable
+CMD ["/api"]
