@@ -2,9 +2,17 @@ version: '3'
 
 services:
   api:
-    image: sinistra/eco-api
+    image: sinistra/eco-api:latest
+    container_name: eco_api
 #    restart: unless-stopped
     ports:
       - 8000:8000
 #    devices:
-    volumes:
+#    volumes:
+    networks:
+      - common
+
+networks:
+  common:
+    external:
+      name: common
