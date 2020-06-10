@@ -101,8 +101,8 @@ func (u LoginController) Register(c *gin.Context) {
 
 	existingUser, err := service.UsersService.GetUserByEmail(newUser.Email)
 	if err != nil {
-		log.Println(err)
 		if err.Error() != "sql: no rows in result set" {
+			log.Println(err)
 			newUser.Password = ""
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "error finding user.", "data": newUser})
 			return

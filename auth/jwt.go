@@ -142,6 +142,7 @@ func Validate(username, password string) (*domain.User, error) {
 		return nil, err
 	}
 
+	// TODO remove these comments
 	log.Println(username, password)
 	log.Println(passwordString, user.Password)
 
