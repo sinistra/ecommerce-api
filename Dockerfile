@@ -18,6 +18,9 @@ WORKDIR /
 COPY --from=builder /app/api .
 # copy the production env file from dev
 COPY ./prod.env .env
+# create public folder and copy html files needed
+RUN mkdir /public
+COPY ./public/index.html /public/index.html
 
 EXPOSE 8000
 # set GIN-GONIC to release mode
