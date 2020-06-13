@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
 	"io"
 	"log"
 	"mime/multipart"
@@ -119,7 +118,7 @@ func (s ItemController) UpdateItem(c *gin.Context) {
 		return
 	}
 
-	spew.Dump(c.Request.FormFile)
+	// spew.Dump(c.Request.FormFile)
 	imagePtr, err := processImage(c, item)
 	if err != nil {
 		log.Println(err)
