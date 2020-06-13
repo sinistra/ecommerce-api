@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"github.com/davecgh/go-spew/spew"
 	"io"
 	"log"
 	"mime/multipart"
@@ -74,15 +75,19 @@ func (s ItemController) AddItem(c *gin.Context) {
 		return
 	}
 
+	// spew.Dump(c.Request.FormFile)
 	imagePtr, err := processImage(c, item)
 	if err != nil {
-		msg := "cannot save image"
-		log.Println(msg)
-		c.JSON(http.StatusInternalServerError, gin.H{"message": msg, "error": err.Error()})
-		return
+		log.Println(err)
+		if err.Error() != "http: no such file" {
+			msg := "cannot save image"
+			log.Println(msg)
+			c.JSON(http.StatusInternalServerError, gin.H{"message": msg, "error": err.Error()})
+			return
+		}
+	} else {
+		item.Image = *imagePtr
 	}
-
-	item.Image = *imagePtr
 
 	itemID, err := service.ItemsService.AddItem(item)
 	if err != nil {
@@ -114,8 +119,10 @@ func (s ItemController) UpdateItem(c *gin.Context) {
 		return
 	}
 
+	spew.Dump(c.Request.FormFile)
 	imagePtr, err := processImage(c, item)
 	if err != nil {
+		log.Println(err)
 		if err.Error() != "http: no such file" {
 			msg := "cannot save image"
 			log.Println(msg)
@@ -153,7 +160,7 @@ func processImage(c *gin.Context, item domain.Item) (*string, error) {
 	file, header, err := c.Request.FormFile("upload")
 	var imagePath *string
 	if err != nil {
-		log.Println("image upload empty or there was an error.", err)
+		log.Println("image upload empty.", err)
 		return nil, err
 	} else {
 		imagePath, err = saveImage(file, header, item.Code)
