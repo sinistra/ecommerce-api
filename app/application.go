@@ -27,11 +27,13 @@ import (
 )
 
 var (
-	router = gin.New()
-	db     *sqlx.DB
-	mdb    *mgo.Database
-	port   string
-	host   string
+	router   = gin.New()
+	db       *sqlx.DB
+	mdb      *mgo.Database
+	port     string
+	host     string
+	MgDomain string
+	MgKey    string
 )
 
 func init() {
@@ -47,6 +49,16 @@ func init() {
 	if !ok {
 		host = "http://localhost"
 	}
+
+	MgDomain, ok = os.LookupEnv("MAILGUN_DOMAIN")
+	if !ok {
+		log.Fatal("cannot read MAILGUN_DOMAIN")
+	}
+	MgKey, ok = os.LookupEnv("MAILGUN_KEY")
+	if !ok {
+		log.Fatal("cannot read MAILGUN_KEY")
+	}
+
 }
 
 func StartApplication() {

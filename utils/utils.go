@@ -1,11 +1,13 @@
 package utils
 
 import (
+	"bytes"
 	"crypto/rand"
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
+	"html/template"
 	"log"
 	"math"
 	"net/http"
@@ -93,4 +95,16 @@ func MakeKey(keylen int) (string, error) {
 
 	log.Println(string(key))
 	return fmt.Sprintf("%x", key), nil
+}
+
+func ParseTemplate(fileName string, data interface{}) (string, error) {
+	t, err := template.ParseFiles(fileName)
+	if err != nil {
+		return "", err
+	}
+	buffer := new(bytes.Buffer)
+	if err = t.Execute(buffer, data); err != nil {
+		return "", err
+	}
+	return buffer.String(), nil
 }

@@ -36,7 +36,7 @@ func Test_itemsService_AddItem(t *testing.T) {
 	item.AvailableQuantity = 9
 	item.SoldQuantity = 10
 	item.Price = 99.99
-	item.Picture = "path to picture"
+	item.Image = "path to picture"
 
 	s := itemsService{}
 	got, err := s.AddItem(item)
@@ -61,7 +61,7 @@ func Test_itemsService_AddItem(t *testing.T) {
 	item.AvailableQuantity = 12
 	item.SoldQuantity = 55
 	item.Price = 0.78
-	item.Picture = "path to picture 2"
+	item.Image = "path to picture 2"
 
 	got, err = s.AddItem(item)
 	if err != nil {
