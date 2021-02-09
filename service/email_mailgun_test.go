@@ -38,8 +38,8 @@ func Test_mailgunService_SendVerificationEmail(t *testing.T) {
 
 	s := mailgunService{
 		Sender:    "Excited User <mailgun@thenotabene.com>",
-		Subject:   "tt.fields.Subject",
-		Body:      "tt.fields.Body",
+		Subject:   "Test Subject",
+		Body:      "Test Body",
 		Recipient: "",
 	}
 

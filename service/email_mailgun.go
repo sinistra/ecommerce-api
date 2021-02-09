@@ -28,7 +28,7 @@ type mailgunServiceInterface interface {
 func (s mailgunService) SendVerificationEmail(user domain.User) error {
 	s.Sender = "Excited User <mailgun@thenotabene.com>"
 	s.Subject = "Welcome to the Nota Bene"
-	body, err := utils.ParseTemplate("../templates/verify_email.html", user)
+	body, err := utils.ParseTemplate("./templates/verify_email.html", user)
 	if err != nil {
 		log.Fatal(err)
 	}

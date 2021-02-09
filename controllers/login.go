@@ -160,9 +160,11 @@ func (u LoginController) Verify(c *gin.Context) {
 	user.Status = "verified"
 	result, err := service.UsersService.UpdateUser(user)
 	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "server error", "error": err.Error()})
+		log.Println(err, result)
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
-	c.String(http.StatusAccepted, "Record %d updated: %d", user.Id, result)
+	body, err := utils.ParseTemplate("./templates/verified.html", user)
+
+	c.String(http.StatusAccepted, body)
 }

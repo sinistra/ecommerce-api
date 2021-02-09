@@ -99,7 +99,7 @@ func (s usersService) GetUserByUUID(userId *string) (domain.User, error) {
 	return user, err
 }
 
-func (s usersService) AddUser(User domain.User) (int, error) {
+func (s usersService) AddUser(user domain.User) (int, error) {
 	db := driver.ConnectDB()
 	defer db.Close()
 
@@ -107,7 +107,7 @@ func (s usersService) AddUser(User domain.User) (int, error) {
 	if err != nil {
 		log.Println(err)
 	}
-	res, err := stmt.Exec(User.FirstName, User.LastName, User.Email, User.Status, User.Password, User.UUID)
+	res, err := stmt.Exec(user.FirstName, user.LastName, user.Email, user.Status, user.Password, user.UUID)
 	if err != nil {
 		log.Println(err)
 		return 0, err
@@ -121,6 +121,11 @@ func (s usersService) AddUser(User domain.User) (int, error) {
 		log.Println(err, rowCnt)
 	}
 	// log.Printf("ID = %d, affected = %d\n", lastId, rowCnt)
+	user.Id = int(lastId)
+	err = MailgunService.SendVerificationEmail(user)
+	if err != nil {
+		log.Println(err, "error sending verification email")
+	}
 
 	return int(lastId), nil
 }

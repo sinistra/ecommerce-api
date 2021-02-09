@@ -1,28 +1,27 @@
-{{define "header"}}
-{{end}}
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Nota Bene</title>
-    <link rel="icon" type="image/png" href="http://thenotabene.com/favicon.png">
-    <link rel="stylesheet" href="./Nota Bene_files/base.css">
-    <link rel="stylesheet" href="./Nota Bene_files/global.css">
-    <link rel="stylesheet" href="./Nota Bene_files/bundle.css">
+    <link rel='icon' type='image/png' href='/favicon.png'>
+    <link rel='stylesheet' href='/base.css'>
+    <link rel='stylesheet' href='/global.css'>
+    <link rel='stylesheet' href='/bundle.css'>
+    <!-- <link rel='stylesheet' href='/fontawesome-free-5.11.2-web/css/all.min.css'> -->
+    <!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> -->
 
-    <link rel="stylesheet" href="./Nota Bene_files/material-icons.min.css"
-          integrity="sha256-x8PYmLKD83R9T/sYmJn1j3is/chhJdySyhet/JuHnfY=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-icons/3.0.1/iconfont/material-icons.min.css" integrity="sha256-x8PYmLKD83R9T/sYmJn1j3is/chhJdySyhet/JuHnfY=" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <style></style>
 </head>
 <body class="antialiased bg-gray-300 m-0 p-0" cz-shortcut-listen="true">
 <header class="lg:px-16 px-6 bg-white flex flex-wrap items-center lg:py-0 py-2">
     <div class="flex-1 flex justify-between items-center">
-        <a href="http://localhost:5000/">
-            <img src="./Nota Bene_files/the_nota_bene.png" alt="The Nota Bene" class="h-16">
+        <a href="http://thenotabene.com">
+            <img src="http://thenotabene.com/images/the_nota_bene.png" alt="The Nota Bene" class="h-16">
         </a>
     </div>
-    <input class="hidden" type="checkbox" id="menu-toggle">
     <div class="hidden lg:flex lg:items-center lg:w-auto w-full svelte-o9q34u" id="menu">
         <nav>
             <ul class="lg:flex items-center justify-between text-base text-gray-700 pt-4 lg:pt-0">
@@ -44,12 +43,6 @@
                 </li>
             </ul>
         </nav>
-        <div class="btn-cart-container">
-            <button class="btn-cart-toggle">
-                <i class="material-icons">shopping_basket</i>
-            </button>
-            <span class="btn-cart-items svelte-1l56yk3">0</span>
-        </div>
     </div>
 </header>
 <div class="container mx-auto flex flex-col md:flex-row items-center my-6 md:my-12">
