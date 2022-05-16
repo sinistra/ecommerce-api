@@ -2,11 +2,11 @@ package controllers
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	uuid "github.com/satori/go.uuid"
 	"log"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
+	uuid "github.com/satori/go.uuid"
 	"github.com/sinistra/ecommerce-api/auth"
 	"github.com/sinistra/ecommerce-api/domain"
 	"github.com/sinistra/ecommerce-api/service"

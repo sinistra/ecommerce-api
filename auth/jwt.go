@@ -2,17 +2,17 @@ package auth
 
 import (
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
 	"os"
 	"strings"
 
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/sinistra/ecommerce-api/domain"
 	"github.com/sinistra/ecommerce-api/service"
 	"github.com/sinistra/ecommerce-api/utils"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func GenerateToken(user domain.LoginRequest) (string, error) {
