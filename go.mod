@@ -8,20 +8,23 @@ require (
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-contrib/zap v0.0.1
 	github.com/gin-gonic/contrib v0.0.0-20191209060500-d6e26eeaa607
-	github.com/gin-gonic/gin v1.9.0
+	github.com/gin-gonic/gin v1.9.1
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/golang-jwt/jwt/v4 v4.4.1
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/joho/godotenv v1.3.0
 	github.com/kelseyhightower/envconfig v1.4.0
+	github.com/kr/pretty v0.3.0 // indirect
 	github.com/mailgun/mailgun-go/v4 v4.1.2
+	github.com/rogpeppe/go-internal v1.8.0 // indirect
 	github.com/satori/go.uuid v1.2.0
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.3
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.5.1
 	go.uber.org/zap v1.15.0
-	golang.org/x/crypto v0.5.0
+	golang.org/x/crypto v0.9.0
+	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/ldap.v3 v3.1.0
 	gopkg.in/yaml.v2 v2.2.8 // indirect
 )
